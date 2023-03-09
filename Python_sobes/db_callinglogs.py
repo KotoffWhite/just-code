@@ -143,24 +143,13 @@ class CallingLogs:
             self.put_in_curr_calls(call_start, duration)
             self.last_time_record = call_start
 
-    def drop_logs_table(self) -> None:
-        """
-        Очищает таблицу звонков в базе данных
-        """
-        base = declarative_base()
-        metadata = MetaData()
-        metadata.reflect(bind=self.engine)
-        table = metadata.tables.get(self.table_name)
-        if table is not None:
-            base.metadata.drop_all(self.engine, [table], checkfirst=True)
-
 
 if __name__ == '__main__':
     engine = create_engine("postgresql+psycopg2://postgres:postgres@localhost:5433/Testirovschiki")
     print('Создание записей')
     start_time = time.time()
     CL = CallingLogs(engine=engine)
-    CL.generated_filling(30000)
+    CL.generated_filling(1000)
     CL.display_content(10)
     print('Максимальное количество одновременных звонков: ', CL.get_max_simult_calls())
     elapsed_time = time.time() - start_time
@@ -173,4 +162,3 @@ if __name__ == '__main__':
     print('Максимальное количество одновременных звонков: ', CL.get_max_simult_calls())
     elapsed_time = time.time() - start_time
     print('Время выполнения программы: ', elapsed_time)
-    CL.drop_logs_table()
