@@ -1,4 +1,3 @@
-from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from random import randrange
 from collections import deque
@@ -6,8 +5,7 @@ import csv
 import os
 import time
 import pandas as pd
-from sqlalchemy import create_engine, text, MetaData
-from sqlalchemy.orm import declarative_base
+from sqlalchemy import create_engine, text
 
 
 def is_empty_csv(FILE_PATH: str) -> bool:
@@ -22,16 +20,16 @@ def is_empty_csv(FILE_PATH: str) -> bool:
     return True
 
 
-@dataclass
 class CallingLogs:
-    FILE_PATH: str = 'calling_logs.csv'  # Расположение файла логов звонков
     fist_time_record: datetime = datetime(1987, 1, 1, 0, 0, 0)  # Первый звонок для генерации
     last_time_record: datetime = fist_time_record  # От него со случайным шагом генерируется следующий звонок
     max_simult_calls: int = 0   # Записывает максимальное кол-во звонков на текущий момент
-    engine: None = None  # Для подключения к базе данных
-    db_name: str = 'Testirovschiki'  # Название базы данных
-    table_name: str = 'calling_logs'  # Название таблицы
-    current_calls: deque = field(default_factory=deque)  # Хранение списка времени окончания текущих звонков
+
+    def __init__(self, file_path: str = 'data/calling_logs.csv', engine=None, table_name: str = 'calling_logs'):
+        self.FILE_PATH = file_path  # Путь к файлу для записи логов
+        self.current_calls = deque()  # Записывает текущие звонки
+        self.engine = engine  # Для подключения к базе данных
+        self.table_name = table_name  # Название таблицы
 
     def generate_random_single_date(self) -> datetime:
         """
